@@ -1,4 +1,16 @@
 <?php
+// Configurar almacenamiento local de sesiones para evitar borrado por otros scripts
+$sessionPath = __DIR__ . '/sessions';
+if (!file_exists($sessionPath)) {
+    @mkdir($sessionPath, 0777, true);
+}
+if (is_dir($sessionPath) && is_writable($sessionPath)) {
+    session_save_path($sessionPath);
+}
+
+// Configurar duración a 24 horas
+ini_set('session.gc_maxlifetime', 86400);
+session_set_cookie_params(86400);
 session_start();
 
 // Configuración
@@ -20,6 +32,12 @@ if (!$gameData) {
 }
 
 $response = ['status' => 'error', 'message' => 'Comando no reconocido'];
+
+// --- ACCIÓN: KEEP ALIVE (PING) ---
+if (isset($_POST['action']) && $_POST['action'] === 'keep_alive') {
+    echo json_encode(['status' => 'success']);
+    exit;
+}
 
 // --- ACCIÓN: INICIAR RUTA ---
 if (isset($_POST['action']) && $_POST['action'] === 'start_path') {

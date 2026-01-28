@@ -56,6 +56,13 @@
         const skipBtn = document.getElementById('skip-btn');
         let cooldownInterval = null;
         
+        // Ping al servidor cada 60 segundos para mantener la sesión viva
+        setInterval(() => {
+            const formData = new FormData();
+            formData.append('action', 'keep_alive');
+            fetch('game_engine.php', { method: 'POST', body: formData });
+        }, 60000);
+        
         // Función para escribir en la terminal
         function appendLog(text, type = 'normal') {
             const p = document.createElement('p');
