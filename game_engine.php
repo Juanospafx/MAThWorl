@@ -99,11 +99,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
     
     // Lógica de comparación flexible
     // 1. Convertir a minúsculas
-    // 2. Eliminar TODOS los espacios (para evitar errores por espacios extra)
-    // 3. Eliminar comillas simples y dobles para normalizar strings
+    // 2. Reemplazar comillas dobles por simples (para permitir ambas)
+    // 3. Eliminar espacios (para permitir x = 1 vs x=1)
+    // NOTA: Ya no eliminamos las comillas, solo las normalizamos para detectar errores de sintaxis (comillas sin cerrar).
     
-    $cleanUser = str_replace([' ', '"', "'"], '', strtolower($userAnswer));
-    $cleanCorrect = str_replace([' ', '"', "'"], '', strtolower($currentChallenge['answer']));
+    $cleanUser = str_replace([' ', '"'], ['', "'"], strtolower($userAnswer));
+    $cleanCorrect = str_replace([' ', '"'], ['', "'"], strtolower($currentChallenge['answer']));
 
     if ($cleanUser === $cleanCorrect) {
         $_SESSION['score'] += 10;
@@ -127,19 +128,81 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
                 'super_hint_available' => ($_SESSION['streak'] >= $_SESSION['next_super_hint_at'])
             ];
         } else {
-            $response = [
-                'status' => 'success',
-                'correct' => true,
-                'message' => $msg . ">> NIVEL " . strtoupper($levelKey) . " COMPLETADO.\n>> Accediendo a siguiente sector de memoria... (Fin de la demo)\n",
-                'finished_level' => true,
-                'score' => $_SESSION['score']
-            ];
+            // Lógica de transición de nivel automática
+            $levelOrder = ['beginner', 'intermediate', 'master'];
+            $currentPos = array_search($levelKey, $levelOrder);
+            $nextLevelKey = ($currentPos !== false && isset($levelOrder[$currentPos + 1])) ? $levelOrder[$currentPos + 1] : null;
+
+            if ($nextLevelKey && isset($gameData[$path]['levels'][$nextLevelKey])) {
+                // Avanzar al siguiente nivel en la sesión
+                $_SESSION['current_level_key'] = $nextLevelKey;
+                $_SESSION['current_q_index'] = 0;
+                
+                $nextLevelData = $gameData[$path]['levels'][$nextLevelKey];
+                
+                // Verificar si el siguiente nivel tiene desafíos cargados
+                if (!empty($nextLevelData['challenges'])) {
+                    $nextQ = $nextLevelData['challenges'][0];
+                    
+                    $response = [
+                        'status' => 'success',
+                        'correct' => true,
+                        'message' => $msg . ">> NIVEL " . strtoupper($levelKey) . " COMPLETADO.\n>> ACCEDIENDO AL SIGUIENTE SECTOR: " . strtoupper($nextLevelKey) . "...\n\n>> " . $nextLevelData['story'] . "\n",
+                        'next_question' => $nextQ['question'],
+                        'lesson' => $nextQ['lesson'] ?? null,
+                        'score' => $_SESSION['score'],
+                        'lives' => $_SESSION['lives'],
+                        'streak' => $_SESSION['streak'],
+                        'super_hint_available' => ($_SESSION['streak'] >= $_SESSION['next_super_hint_at'])
+                    ];
+                } else {
+                     $response = [
+                        'status' => 'success',
+                        'correct' => true,
+                        'message' => $msg . ">> NIVEL " . strtoupper($levelKey) . " COMPLETADO.\n>> El sector " . strtoupper($nextLevelKey) . " está vacío por ahora.\n",
+                        'finished_level' => true,
+                        'score' => $_SESSION['score']
+                    ];
+                }
+            } else {
+                $response = [
+                    'status' => 'success',
+                    'correct' => true,
+                    'message' => $msg . ">> NIVEL " . strtoupper($levelKey) . " COMPLETADO.\n>> ¡SISTEMA RESTAURADO AL 100%! Misión cumplida.\n",
+                    'finished_level' => true,
+                    'score' => $_SESSION['score']
+                ];
+            }
         }
     } else {
         $response = [
             'status' => 'success',
             'correct' => false,
             'message' => ">> ERROR DE SINTAXIS.\n>> Pista: " . $currentChallenge['hint'] . "\n"
+        ];
+    }
+}
+
+// --- ACCIÓN: OBTENER SUPER PISTA ---
+if (isset($_POST['action']) && $_POST['action'] === 'get_super_hint') {
+    if (!isset($_SESSION['current_path'])) exit;
+    
+    $streak = $_SESSION['streak'];
+    $threshold = $_SESSION['next_super_hint_at'];
+    
+    if ($streak >= $threshold) {
+        $path = $_SESSION['current_path'];
+        $levelKey = $_SESSION['current_level_key'];
+        $qIndex = $_SESSION['current_q_index'];
+        $answer = $gameData[$path]['levels'][$levelKey]['challenges'][$qIndex]['answer'];
+        
+        // Incrementar el costo de la siguiente pista (+3)
+        $_SESSION['next_super_hint_at'] = $streak + 3;
+        
+        $response = [
+            'status' => 'success',
+            'message' => ">> SUPER PISTA ACTIVADA: La respuesta es casi: " . $answer,
+            'super_hint_available' => false // Ya se usó
         ];
     }
 }
