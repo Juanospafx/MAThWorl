@@ -237,17 +237,179 @@
     "r_lang": {
         "levels": {
             "beginner": {
-                "title": "Sector R-1: Vectores",
-                "story": "Iniciando entorno estadístico R.",
+                "title": "Sector R-1: Vectores y DataFrames",
+                "story": "El núcleo estadístico R-Core está desincronizado. Necesitamos realinear los vectores y cargar las matrices de datos primarios.",
                 "challenges": [
                      {
                         "id": 1,
-                        "question": "Asigna el valor 5 a la variable x.",
-                        "answer": "x <- 5",
-                        "hint": "Usa la flecha <-",
-                        "lesson": "En R, la asignación de variables se hace tradicionalmente con una flecha `<-` en lugar de un igual. Ejemplo: `valor <- 10`."
+                        "question": "Asigna el valor 100 a la variable 'energia'.",
+                        "answer": "energia <- 100",
+                        "hint": "Usa la flecha <- para asignar.",
+                        "lesson": "En R, la asignación estándar se realiza con `<-`. Es como decir 'guarda este valor aquí'."
+                    },
+                    {
+                        "id": 2,
+                        "question": "Imprime el mensaje 'R-Core Online'.",
+                        "answer": "print('R-Core Online')",
+                        "hint": "Usa la función print().",
+                        "lesson": "Confirma que el sistema nos escucha. Usa `print()` para enviar una señal a la consola."
+                    },
+                    {
+                        "id": 3,
+                        "question": "Crea un vector llamado 'sectores' con los valores 1, 2 y 3.",
+                        "answer": "sectores <- c(1, 2, 3)",
+                        "hint": "Usa la función c() para combinar valores.",
+                        "lesson": "Los datos en R viajan en vectores. Usa `c()` (combine) para agrupar los identificadores de sector."
+                    },
+                    {
+                        "id": 4,
+                        "question": "Accede al primer elemento del vector 'sectores'.",
+                        "answer": "sectores[1]",
+                        "hint": "En R, los índices empiezan en 1.",
+                        "lesson": "¡Cuidado cadete! A diferencia de otros sistemas, R empieza a contar desde 1. Accede al primer sector con `[1]`."
+                    },
+                    {
+                        "id": 5,
+                        "question": "Verifica la clase (tipo) de la variable 'energia'.",
+                        "answer": "class(energia)",
+                        "hint": "Usa la función class().",
+                        "lesson": "No sabemos qué tipo de energía es. Usa `class()` para inspeccionar el tipo de dato del objeto."
+                    },
+                    {
+                        "id": 6,
+                        "question": "Carga el archivo 'logs.csv' en un data frame llamado 'df'.",
+                        "answer": "df <- read.csv('logs.csv')",
+                        "hint": "Usa read.csv().",
+                        "lesson": "Los registros de vuelo están en CSV. Cárgalos en un Data Frame, la estructura tabular nativa de R."
+                    },
+                    {
+                        "id": 7,
+                        "question": "Muestra las primeras 6 filas de 'df'.",
+                        "answer": "head(df)",
+                        "hint": "Usa la función head().",
+                        "lesson": "Visualiza la cabecera de los datos con `head()` para asegurar que la carga fue exitosa sin saturar la pantalla."
+                    },
+                    {
+                        "id": 8,
+                        "question": "Obtén el número de filas y columnas de 'df'.",
+                        "answer": "dim(df)",
+                        "hint": "Usa la función dim().",
+                        "lesson": "Dimensiona el problema. `dim()` te devolverá el tamaño exacto de la matriz de datos."
+                    },
+                    {
+                        "id": 9,
+                        "question": "Accede a la columna 'status' del data frame 'df'.",
+                        "answer": "df$status",
+                        "hint": "Usa el operador $.",
+                        "lesson": "Para extraer una columna específica de un Data Frame, usamos el signo de dólar `$`. Ejemplo: `datos$columna`."
+                    },
+                    {
+                        "id": 10,
+                        "question": "Calcula el promedio de la columna 'energia' en 'df'.",
+                        "answer": "mean(df$energia)",
+                        "hint": "Usa la función mean().",
+                        "lesson": "Necesitamos saber el nivel medio de potencia. Aplica `mean()` sobre la columna de energía."
+                    }
+                ],
+                "bosses": [
+                    {
+                        "id": 101,
+                        "question": "BOSS: Extrae las filas de 'df' donde 'energia' sea mayor a 50.",
+                        "answer": "df[df$energia > 50, ]",
+                        "hint": "Usa corchetes [condicion, ]. No olvides la coma.",
+                        "lesson": "¡ALERTA CRÍTICA! Filtra manualmente los sectores inestables. Usa corchetes `[filas, columnas]` y deja el espacio de columnas vacío para seleccionarlas todas."
                     }
                 ]
+            },
+            "intermediate": {
+                "title": "Sector R-2: Tidyverse y Manipulación",
+                "story": "Los protocolos base son demasiado lentos. Activa el paquete 'dplyr' para manipulación de datos a velocidad luz.",
+                "challenges": [
+                    {
+                        "id": 1,
+                        "question": "Carga la librería dplyr.",
+                        "answer": "library(dplyr)",
+                        "hint": "Usa library().",
+                        "lesson": "Inicia los propulsores Tidyverse. Carga `dplyr`, nuestra herramienta principal para gramática de datos."
+                    },
+                    {
+                        "id": 2,
+                        "question": "Usa el operador pipe para pasar 'df' a la función head().",
+                        "answer": "df %>% head()",
+                        "hint": "El pipe es %>%",
+                        "lesson": "El operador pipe `%>%` canaliza la salida de una función a la entrada de la siguiente. Es vital para encadenar comandos."
+                    },
+                    {
+                        "id": 3,
+                        "question": "Filtra 'df' para mantener solo filas con 'status' igual a 'active'.",
+                        "answer": "filter(df, status == 'active')",
+                        "hint": "Usa filter().",
+                        "lesson": "Limpia el ruido. Usa `filter()` para quedarnos solo con los sistemas activos."
+                    },
+                    {
+                        "id": 4,
+                        "question": "Selecciona solo las columnas 'id' y 'energia' de 'df'.",
+                        "answer": "select(df, id, energia)",
+                        "hint": "Usa select().",
+                        "lesson": "Reduce la carga de ancho de banda. `select()` nos permite escoger solo las columnas relevantes."
+                    },
+                    {
+                        "id": 5,
+                        "question": "Crea una nueva columna 'doble' que sea 'energia' multiplicada por 2.",
+                        "answer": "mutate(df, doble = energia * 2)",
+                        "hint": "Usa mutate().",
+                        "lesson": "Necesitamos proyecciones. `mutate()` crea nuevas variables o modifica las existentes basándose en cálculos."
+                    },
+                    {
+                        "id": 6,
+                        "question": "Ordena 'df' por 'energia' de forma descendente.",
+                        "answer": "arrange(df, desc(energia))",
+                        "hint": "Usa arrange() y desc().",
+                        "lesson": "Prioriza los sistemas con más carga. `arrange()` ordena las filas, y `desc()` invierte el orden."
+                    },
+                    {
+                        "id": 7,
+                        "question": "Agrupa 'df' por la columna 'sector'.",
+                        "answer": "group_by(df, sector)",
+                        "hint": "Usa group_by().",
+                        "lesson": "Divide y vencerás. `group_by()` prepara los datos para operaciones por bloques o categorías."
+                    },
+                    {
+                        "id": 8,
+                        "question": "Calcula la media de energia por grupo (usa summarise).",
+                        "answer": "summarise(df, media = mean(energia))",
+                        "hint": "Usa summarise().",
+                        "lesson": "Colapsa los datos en un reporte. `summarise()` reduce cada grupo a una sola fila de estadísticas."
+                    },
+                    {
+                        "id": 9,
+                        "question": "Carga la librería ggplot2 para visualización.",
+                        "answer": "library(ggplot2)",
+                        "hint": "Usa library().",
+                        "lesson": "Los datos numéricos son difíciles de leer. Activa `ggplot2` para generar representaciones gráficas."
+                    },
+                    {
+                        "id": 10,
+                        "question": "Inicia un gráfico con 'df' mapeando 'sector' a x y 'energia' a y.",
+                        "answer": "ggplot(df, aes(x=sector, y=energia))",
+                        "hint": "Usa ggplot() y aes().",
+                        "lesson": "Configura el lienzo. `ggplot()` define la fuente de datos y `aes()` (estética) define qué variables van a qué ejes."
+                    }
+                ],
+                "bosses": [
+                    {
+                        "id": 201,
+                        "question": "BOSS: Encadena: df %>% filter(energia > 0) %>% select(id).",
+                        "answer": "df %>% filter(energia > 0) %>% select(id)",
+                        "hint": "Usa los pipes %>% para unir las funciones.",
+                        "lesson": "¡COMBO BREAKER! El núcleo necesita una instrucción compleja en una sola línea. Filtra la energía positiva Y LUEGO selecciona solo los IDs."
+                    }
+                ]
+            },
+            "master": {
+                "title": "Sector R-3: Modelado Estadístico",
+                "story": "Fase final. Implementación de modelos lineales y predicción.",
+                "challenges": []
             }
         }
     }
