@@ -54,6 +54,7 @@
         const superHintBtn = document.getElementById('super-hint-btn');
         const saveBtn = document.getElementById('save-btn');
         const skipBtn = document.getElementById('skip-btn');
+        let cooldownInterval = null;
         
         // Función para escribir en la terminal
         function appendLog(text, type = 'normal') {
@@ -90,6 +91,42 @@
             if(state === 'hurt') avatarDisplay.innerText = "[ >_< ]";
         }
 
+        function startCooldownTimer(seconds) {
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            
+            inputField.disabled = true;
+            inputField.value = "";
+            inputField.placeholder = "SISTEMA BLOQUEADO...";
+            
+            // Crear línea dedicada para el timer en la terminal
+            const timerId = 'cooldown-timer-' + Date.now();
+            const p = document.createElement('p');
+            p.id = timerId;
+            p.className = 'error-msg';
+            outputDiv.appendChild(p);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+
+            function updateTimer() {
+                if (seconds <= 0) {
+                    clearInterval(cooldownInterval);
+                    document.getElementById(timerId).innerText = ">> ENFRIAMIENTO COMPLETADO. SISTEMA LISTO.";
+                    document.getElementById(timerId).className = 'success-msg';
+                    inputField.disabled = false;
+                    inputField.placeholder = "Escribe tu código aquí...";
+                    inputField.focus();
+                    return;
+                }
+                
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById(timerId).innerText = `>> REINICIO DISPONIBLE EN: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                seconds--;
+            }
+
+            updateTimer(); // Ejecutar inmediatamente
+            cooldownInterval = setInterval(updateTimer, 1000);
+        }
+
         // Iniciar el juego
         function startGame(path) {
             mainMenu.style.display = 'none';
@@ -113,6 +150,9 @@
             .then(data => {
                 if(data.status === 'error') {
                     appendLog(data.message, 'error');
+                    if(data.cooldown_remaining) {
+                        startCooldownTimer(data.cooldown_remaining);
+                    }
                     return;
                 }
                 appendLog(data.message, 'system');
@@ -183,6 +223,9 @@
             .then(data => {
                 if(data.status === 'error') {
                     appendLog(data.message, 'error');
+                    if(data.cooldown_remaining) {
+                        startCooldownTimer(data.cooldown_remaining);
+                    }
                     return;
                 }
                 // Iniciar interfaz de juego

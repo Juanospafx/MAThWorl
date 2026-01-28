@@ -29,7 +29,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'start_path') {
     if (isset($_COOKIE['synapse_cooldown'])) {
         $remaining = $_COOKIE['synapse_cooldown'] - time();
         if ($remaining > 0) {
-            echo json_encode(['status' => 'error', 'message' => ">> SISTEMA SOBRECALENTADO.\n>> REINICIO DISPONIBLE EN: " . $remaining . " SEGUNDOS."]);
+            echo json_encode([
+                'status' => 'error', 
+                'message' => ">> SISTEMA SOBRECALENTADO.", 
+                'cooldown_remaining' => $remaining
+            ]);
             exit;
         }
     }
@@ -217,7 +221,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
                 'status' => 'success',
                 'correct' => false,
                 'game_over' => true,
-                'message' => ">> ERROR FATAL: NÚCLEO INESTABLE.\n>> HAS MUERTO (Fallo #$deathCount).\n>> SISTEMA BLOQUEADO POR $cooldownMinutes MINUTO(S).\n>> PROTOCOLO ROGUELIKE: PROGRESO ELIMINADO. REINICIANDO SISTEMA...",
+                'message' => ">> ERROR FATAL: NÚCLEO INESTABLE.\n>> HAS MUERTO (Fallo #$deathCount).\n>> INICIANDO PROTOCOLO DE ENFRIAMIENTO.\n>> PROTOCOLO ROGUELIKE: PROGRESO ELIMINADO.",
+                'cooldown_remaining' => $cooldownSeconds,
                 'lives' => 0,
                 'streak' => 0
             ];
@@ -327,7 +332,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'load_game') {
     if (isset($_COOKIE['synapse_cooldown'])) {
         $remaining = $_COOKIE['synapse_cooldown'] - time();
         if ($remaining > 0) {
-            echo json_encode(['status' => 'error', 'message' => ">> SISTEMA SOBRECALENTADO.\n>> ESPERE " . $remaining . " SEGUNDOS."]);
+            echo json_encode([
+                'status' => 'error', 
+                'message' => ">> SISTEMA SOBRECALENTADO.", 
+                'cooldown_remaining' => $remaining
+            ]);
             exit;
         }
     }
