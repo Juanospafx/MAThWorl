@@ -1,0 +1,144 @@
+{
+    "python": {
+        "levels": {
+            "beginner": {
+                "title": "Sector 1: Fundamentos de Sintaxis",
+                "story": "El núcleo de procesamiento está inactivo. Necesitamos inicializar las variables básicas para arrancar el sistema.",
+                "challenges": [
+                    {
+                        "id": 1,
+                        "question": "Imprime el mensaje 'System Online' en la consola.",
+                        "answer": "print('System Online')",
+                        "hint": "Usa la función print().",
+                        "lesson": "Cadete, el núcleo está en silencio. Necesitamos una señal de vida. Usa el comando `print()` para enviar texto a la pantalla principal. ¡Haz que nos escuchen!"
+                    },
+                    {
+                        "id": 2,
+                        "question": "Asigna el valor 100 a una variable llamada 'energy'.",
+                        "answer": "energy = 100",
+                        "hint": "nombre_variable = valor",
+                        "lesson": "¡Señal recibida! Pero los generadores están vacíos. Necesitamos almacenar energía. Crea una variable (un contenedor de datos) y llénala al máximo."
+                    },
+                    {
+                        "id": 3,
+                        "question": "Verifica el tipo de dato de la variable 'energy'.",
+                        "answer": "type(energy)",
+                        "hint": "Usa la función type().",
+                        "lesson": "El sistema detecta la energía, pero no reconoce su firma. Usa el escáner `type()` para confirmar que estamos tratando con números enteros y no con texto corrupto."
+                    },
+                    {
+                        "id": 4,
+                        "question": "Crea una lista llamada 'sectores' con los valores 1, 2 y 3.",
+                        "answer": "sectores = [1, 2, 3]",
+                        "hint": "Usa corchetes [ ].",
+                        "lesson": "Energía estable. Ahora necesitamos mapear la nave. Crea una lista (un array ordenado) que contenga los identificadores de los sectores dañados."
+                    },
+                    {
+                        "id": 5,
+                        "question": "Accede al primer elemento de la lista 'sectores'.",
+                        "answer": "sectores[0]",
+                        "hint": "Los índices en Python empiezan en 0.",
+                        "lesson": "Prioridad al Sector 1. Accede al primer elemento de tu lista para focalizar las reparaciones. Recuerda cadete: en este sistema, el conteo siempre empieza en CERO."
+                    },
+                    {
+                        "id": 6,
+                        "question": "Añade el número 4 al final de la lista 'sectores'.",
+                        "answer": "sectores.append(4)",
+                        "hint": "Usa el método .append()",
+                        "lesson": "¡Alerta! Se ha detectado una brecha en un cuarto sector. No podemos reescribir toda la lista. Usa `.append()` para adjuntar este nuevo sector al final de tu registro existente."
+                    },
+                    {
+                        "id": 7,
+                        "question": "Importa la librería numpy con el alias 'np'.",
+                        "answer": "import numpy as np",
+                        "hint": "import ... as ...",
+                        "lesson": "Los cálculos manuales son demasiado lentos. Necesitamos potencia de procesamiento matemático. Importa el módulo `numpy` y asígnale el alias táctico `np` para acceso rápido."
+                    },
+                    {
+                        "id": 8,
+                        "question": "Crea un array de numpy con los valores [10, 20, 30].",
+                        "answer": "np.array([10, 20, 30])",
+                        "hint": "np.array(...)",
+                        "lesson": "Las listas estándar no aguantarán la carga cuántica. Convierte tus datos en un `array` de Numpy. Son estructuras blindadas optimizadas para cálculo vectorial."
+                    },
+                    {
+                        "id": 9,
+                        "question": "Importa pandas con el alias 'pd'.",
+                        "answer": "import pandas as pd",
+                        "hint": "Estándar de la industria.",
+                        "lesson": "Necesitamos analizar los registros de la caja negra. Activa el protocolo PANDAS (Python Data Analysis Library) con el alias `pd`. Es nuestra mejor herramienta para manipular tablas."
+                    },
+                    {
+                        "id": 10,
+                        "question": "Lee el archivo 'data.csv' y guárdalo en la variable 'df'.",
+                        "answer": "df = pd.read_csv('data.csv')",
+                        "hint": "Usa pd.read_csv()",
+                        "lesson": "Los datos están en un archivo CSV crudo. Inyéctalos en un DataFrame (df) usando `read_csv`. Si esto falla, volamos a ciegas."
+                    },
+                    {
+                        "id": 11,
+                        "question": "Muestra las primeras 5 filas del DataFrame 'df'.",
+                        "answer": "df.head()",
+                        "hint": "Usa el método .head()",
+                        "lesson": "Datos cargados. No satures la pantalla imprimiendo todo. Usa `.head()` para visualizar solo la cabecera táctica (las primeras 5 filas) y confirmar integridad."
+                    },
+                    {
+                        "id": 12,
+                        "question": "Obtén las dimensiones (filas, columnas) de 'df'.",
+                        "answer": "df.shape",
+                        "hint": "Es un atributo, no lleva paréntesis.",
+                        "lesson": "¿A qué nos enfrentamos? Necesito un reporte de situación. Usa el atributo `.shape` para obtener las dimensiones exactas de la matriz de datos."
+                    },
+                    {
+                        "id": 13,
+                        "question": "Muestra los nombres de las columnas de 'df'.",
+                        "answer": "df.columns",
+                        "hint": "Es un atributo .columns",
+                        "lesson": "Identifica las variables del sistema. Solicita la lista de `.columns` para ver qué métricas tenemos disponibles para el análisis."
+                    },
+                    {
+                        "id": 14,
+                        "question": "Selecciona solo la columna 'energy' del DataFrame 'df'.",
+                        "answer": "df['energy']",
+                        "hint": "Usa corchetes y el nombre de la columna como string.",
+                        "lesson": "Aísla el subsistema de energía. Extrae esa columna específica del DataFrame usando su nombre como clave. Necesitamos ver la fluctuación de potencia."
+                    },
+                    {
+                        "id": 15,
+                        "question": "Muestra un resumen estadístico de 'df'.",
+                        "answer": "df.describe()",
+                        "hint": "Usa el método .describe()",
+                        "lesson": "Dame un análisis completo. Usa `.describe()` para generar estadísticas descriptivas automáticas. Media, desviación, máximos... necesito saberlo todo para salvar la nave."
+                    }
+                ]
+            },
+            "intermediate": {
+                "title": "Sector 2: Manipulación de Datos",
+                "story": "Los datos están corruptos. Se requiere limpieza inmediata.",
+                "challenges": []
+            },
+            "master": {
+                "title": "Sector 3: Machine Learning",
+                "story": "Iniciando protocolos predictivos.",
+                "challenges": []
+            }
+        }
+    },
+    "r_lang": {
+        "levels": {
+            "beginner": {
+                "title": "Sector R-1: Vectores",
+                "story": "Iniciando entorno estadístico R.",
+                "challenges": [
+                     {
+                        "id": 1,
+                        "question": "Asigna el valor 5 a la variable x.",
+                        "answer": "x <- 5",
+                        "hint": "Usa la flecha <-",
+                        "lesson": "En R, la asignación de variables se hace tradicionalmente con una flecha `<-` en lugar de un igual. Ejemplo: `valor <- 10`."
+                    }
+                ]
+            }
+        }
+    }
+}
