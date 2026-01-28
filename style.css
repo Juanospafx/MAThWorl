@@ -123,6 +123,67 @@ input[type="text"] {
     background: #00ffff;
     box-shadow: 0 0 10px #00ffff;
 }
+
+/* --- RESPONSIVE DESIGN (Móviles y Tablets) --- */
+
+@media screen and (max-width: 768px) {
+    .container {
+        width: 95%;
+        height: 95vh; /* Aprovechar más altura en móviles */
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .terminal-window {
+        font-size: 1.1rem;
+    }
+
+    .input-area, input[type="text"] {
+        font-size: 1.1rem;
+    }
+
+    .menu-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .menu-options button {
+        width: 100%;
+        text-align: center;
+        padding: 15px; /* Áreas táctiles más grandes */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .stats {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .avatar {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+
+    /* Forzar márgenes en botones inline del header */
+    .stats button {
+        margin-left: 5px !important;
+        font-size: 0.8rem;
+    }
+
+    .prompt {
+        display: none; /* Ocultar 'user@synapse' para dar espacio */
+    }
+}
 .system-msg { color: #ffff00; margin: 5px 0; }
 .error-msg { color: #ff3333; margin: 5px 0; }
 .success-msg { color: #00ffff; margin: 5px 0; }
