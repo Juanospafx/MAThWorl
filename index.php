@@ -320,7 +320,11 @@
                             setAvatar('hurt');
                             setTimeout(() => setAvatar('normal'), 2000);
                             updateStats(data.lives, 0);
-                            superHintBtn.style.display = 'none';
+                            if(data.super_hint_available) {
+                                superHintBtn.style.display = 'inline-block';
+                            } else {
+                                superHintBtn.style.display = 'none';
+                            }
                         }
                     }
                 })

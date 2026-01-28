@@ -46,6 +46,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'start_path') {
         $_SESSION['streak'] = 0;
         $_SESSION['next_super_hint_at'] = 3; // Umbral inicial para super pista
         $_SESSION['inventory'] = ['skips' => 0]; // Inventario Roguelike
+        $_SESSION['bosses_defeated'] = 0;
+        $_SESSION['next_boss_hint_at'] = 3; // Pista de jefe cada 3 jefes derrotados
         
         // --- GENERACIÓN PROCEDIMENTAL DE LA MAZMORRA (NIVEL) ---
         generateLevelQueue($path, 'beginner', $gameData);
@@ -124,6 +126,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
         $lootMsg = "";
         if (isset($currentChallenge['type']) && $currentChallenge['type'] === 'boss') {
             $_SESSION['inventory']['skips']++;
+            $_SESSION['bosses_defeated']++;
             $lootMsg = "\n>> ¡JEFE DERROTADO! RECOMPENSA: +1 RAM OVERRIDE (SKIP).";
         }
         
@@ -134,6 +137,13 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
         if ($qIndex < count($queue)) {
             $nextQ = $queue[$qIndex];
             $bossWarning = (isset($nextQ['type']) && $nextQ['type'] === 'boss') ? "\n>> ¡ADVERTENCIA! SEÑAL DE JEFE DETECTADA." : "";
+            
+            // Calcular disponibilidad de pista según el tipo de pregunta siguiente
+            $isNextBoss = (isset($nextQ['type']) && $nextQ['type'] === 'boss');
+            $hintAvailable = $isNextBoss 
+                ? ($_SESSION['bosses_defeated'] >= $_SESSION['next_boss_hint_at'])
+                : ($_SESSION['streak'] >= $_SESSION['next_super_hint_at']);
+
             $response = [
                 'status' => 'success',
                 'correct' => true,
@@ -144,7 +154,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
                 'lives' => $_SESSION['lives'],
                 'streak' => $_SESSION['streak'],
                 'skips' => $_SESSION['inventory']['skips'],
-                'super_hint_available' => ($_SESSION['streak'] >= $_SESSION['next_super_hint_at'])
+                'super_hint_available' => $hintAvailable
             ];
         } else {
             // Lógica de transición de nivel automática
@@ -165,6 +175,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
                     $nextQ = $_SESSION['run_queue'][0];
                     $nextLevelData = $gameData[$path]['levels'][$nextLevelKey];
                     
+                    // Calcular disponibilidad de pista para la primera pregunta del nuevo nivel
+                    $isNextBoss = (isset($nextQ['type']) && $nextQ['type'] === 'boss');
+                    $hintAvailable = $isNextBoss 
+                        ? ($_SESSION['bosses_defeated'] >= $_SESSION['next_boss_hint_at'])
+                        : ($_SESSION['streak'] >= $_SESSION['next_super_hint_at']);
+                    
                     $response = [
                         'status' => 'success',
                         'correct' => true,
@@ -175,7 +191,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
                         'lives' => $_SESSION['lives'],
                         'streak' => $_SESSION['streak'],
                         'skips' => $_SESSION['inventory']['skips'],
-                        'super_hint_available' => ($_SESSION['streak'] >= $_SESSION['next_super_hint_at'])
+                        'super_hint_available' => $hintAvailable
                     ];
                 } else {
                      $response = [
@@ -227,12 +243,19 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
                 'streak' => 0
             ];
         } else {
+            // Si fallamos, el streak es 0, pero si es un Boss, la pista depende de bosses_defeated
+            $isBoss = (isset($currentChallenge['type']) && $currentChallenge['type'] === 'boss');
+            $hintAvailable = $isBoss 
+                ? ($_SESSION['bosses_defeated'] >= $_SESSION['next_boss_hint_at'])
+                : false; // Streak es 0
+
             $response = [
                 'status' => 'success',
                 'correct' => false,
                 'message' => ">> ERROR DE SINTAXIS.\n>> Pista: " . $currentChallenge['hint'] . "\n",
                 'lives' => $_SESSION['lives'],
-                'streak' => 0
+                'streak' => 0,
+                'super_hint_available' => $hintAvailable
             ];
         }
     }
@@ -242,17 +265,30 @@ if (isset($_POST['action']) && $_POST['action'] === 'check_answer') {
 if (isset($_POST['action']) && $_POST['action'] === 'get_super_hint') {
     if (!isset($_SESSION['current_path'])) exit;
     
-    $streak = $_SESSION['streak'];
-    $threshold = $_SESSION['next_super_hint_at'];
+    $qIndex = $_SESSION['current_q_index'];
+    $currentQ = $_SESSION['run_queue'][$qIndex];
+    $isBoss = (isset($currentQ['type']) && $currentQ['type'] === 'boss');
+    $canUse = false;
+
+    if ($isBoss) {
+        // Lógica para Jefes: Basada en jefes derrotados
+        if ($_SESSION['bosses_defeated'] >= $_SESSION['next_boss_hint_at']) {
+            $canUse = true;
+            $_SESSION['next_boss_hint_at'] = $_SESSION['bosses_defeated'] + 3;
+        }
+    } else {
+        // Lógica Normal: Basada en racha (streak)
+        $streak = $_SESSION['streak'];
+        $threshold = $_SESSION['next_super_hint_at'];
+        if ($streak >= $threshold) {
+            $canUse = true;
+            $_SESSION['next_super_hint_at'] = $streak + 3;
+        }
+    }
     
-    if ($streak >= $threshold) {
+    if ($canUse) {
         $path = $_SESSION['current_path'];
-        $levelKey = $_SESSION['current_level_key'];
-        $qIndex = $_SESSION['current_q_index'];
-        $answer = $_SESSION['run_queue'][$qIndex]['answer'];
-        
-        // Incrementar el costo de la siguiente pista (+3)
-        $_SESSION['next_super_hint_at'] = $streak + 3;
+        $answer = $currentQ['answer'];
         
         $response = [
             'status' => 'success',
@@ -311,7 +347,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'save_game') {
         'lives' => $_SESSION['lives'],
         'streak' => $_SESSION['streak'],
         'inventory' => $_SESSION['inventory'],
-        'super_hint_at' => $_SESSION['next_super_hint_at']
+        'super_hint_at' => $_SESSION['next_super_hint_at'],
+        'bosses_defeated' => $_SESSION['bosses_defeated'],
+        'next_boss_hint_at' => $_SESSION['next_boss_hint_at']
     ];
     
     // Guardar en cookie por 30 días (base64 para evitar problemas de caracteres)
@@ -352,10 +390,17 @@ if (isset($_POST['action']) && $_POST['action'] === 'load_game') {
     $_SESSION['streak'] = $data['streak'];
     $_SESSION['inventory'] = $data['inventory'];
     $_SESSION['next_super_hint_at'] = $data['super_hint_at'];
+    $_SESSION['bosses_defeated'] = $data['bosses_defeated'] ?? 0;
+    $_SESSION['next_boss_hint_at'] = $data['next_boss_hint_at'] ?? 3;
     
     // Recuperar pregunta actual
     $qData = $_SESSION['run_queue'][$data['q_index']];
     
+    $isBoss = (isset($qData['type']) && $qData['type'] === 'boss');
+    $hintAvailable = $isBoss 
+        ? ($_SESSION['bosses_defeated'] >= $_SESSION['next_boss_hint_at'])
+        : ($_SESSION['streak'] >= $_SESSION['next_super_hint_at']);
+
     echo json_encode([
         'status' => 'success',
         'message' => ">> MEMORIA RESTAURADA. VOLVIENDO AL PUNTO DE CONTROL.",
@@ -365,7 +410,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'load_game') {
         'streak' => $_SESSION['streak'],
         'skips' => $_SESSION['inventory']['skips'],
         'score' => $_SESSION['score'],
-        'super_hint_available' => ($_SESSION['streak'] >= $_SESSION['next_super_hint_at'])
+        'super_hint_available' => $hintAvailable
     ]);
     exit;
 }
