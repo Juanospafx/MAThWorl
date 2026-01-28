@@ -17,6 +17,7 @@
                 <span id="lives-display" style="color: #f00; margin-right: 15px;">♥♥♥</span>
                 <span id="score-display">SCORE: 0000</span> | 
                 <span id="streak-display" style="color: #ff0; margin-left: 10px;">COMBO: 0</span>
+                <button id="skip-btn" onclick="skipChallenge()" style="display:none; margin-left: 15px; background: #f0f; color: #fff; border: none; cursor: pointer; font-weight: bold;">SKIP (0)</button>
                 <button id="super-hint-btn" onclick="useSuperHint()" style="display:none; margin-left: 15px; background: #ff0; color: #000; border: none; cursor: pointer; font-weight: bold;">★ SUPER PISTA ★</button>
                 <button id="save-btn" onclick="saveGame()" style="display:none; margin-left: 15px; background: transparent; border: 1px solid #0ff; color: #0ff; font-family: inherit; cursor: pointer;">[S] GUARDAR</button>
                 <button id="exit-btn" onclick="exitGame()" style="display:none; margin-left: 15px; background: transparent; border: 1px solid #f00; color: #f00; font-family: inherit; cursor: pointer;">[X] MENU PRINCIPAL</button>
@@ -52,6 +53,7 @@
         const exitBtn = document.getElementById('exit-btn');
         const superHintBtn = document.getElementById('super-hint-btn');
         const saveBtn = document.getElementById('save-btn');
+        const skipBtn = document.getElementById('skip-btn');
         
         // Función para escribir en la terminal
         function appendLog(text, type = 'normal') {
@@ -96,6 +98,7 @@
             inputField.placeholder = "Escribe tu código aquí...";
             exitBtn.style.display = 'inline-block';
             saveBtn.style.display = 'inline-block';
+            skipBtn.style.display = 'inline-block';
             setAvatar('normal');
 
             const formData = new FormData();
@@ -114,6 +117,7 @@
                 }
                 appendLog(data.message, 'system');
                 updateStats(data.lives, data.streak);
+                updateSkipBtn(data.skips);
                 if(data.next_question) {
                     if(data.lesson) {
                         setTimeout(() => appendLog(">> LECCIÓN: " + data.lesson, 'lesson'), 300);
@@ -136,6 +140,29 @@
                 superHintBtn.style.display = 'none';
                 inputField.focus();
             });
+        }
+
+        function skipChallenge() {
+            const formData = new FormData();
+            formData.append('action', 'skip_challenge');
+            fetch('game_engine.php', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => {
+                if(data.skipped) {
+                    appendLog(data.message, 'success');
+                    updateSkipBtn(data.skips);
+                    // Recargar estado del juego (truco rápido: recargar partida actual)
+                    // En realidad deberíamos pedir la siguiente pregunta, pero loadGame funciona bien aquí
+                    loadGame(); 
+                } else {
+                    appendLog(data.message, 'error');
+                }
+            });
+        }
+
+        function updateSkipBtn(count) {
+            skipBtn.innerText = "SKIP (" + (count || 0) + ")";
+            skipBtn.style.display = 'inline-block';
         }
 
         function saveGame() {
@@ -167,6 +194,7 @@
                 
                 appendLog(data.message, 'system');
                 updateStats(data.lives, data.streak);
+                updateSkipBtn(data.skips);
                 if(data.next_question) {
                     if(data.lesson) setTimeout(() => appendLog(">> LECCIÓN: " + data.lesson, 'lesson'), 300);
                     setTimeout(() => appendLog(">> DESAFÍO: " + data.next_question, 'normal'), 800);
@@ -219,6 +247,7 @@
                                 scoreDisplay.innerText = "SCORE: " + data.score.toString().padStart(4, '0');
                             }
                             updateStats(data.lives, data.streak);
+                            updateSkipBtn(data.skips);
                             
                             if(data.super_hint_available) {
                                 superHintBtn.style.display = 'inline-block';
@@ -238,6 +267,7 @@
                             updateStats(0, 0);
                             inputField.disabled = true;
                             saveBtn.style.display = 'none';
+                            skipBtn.style.display = 'none';
                             // Cerrar juego automáticamente tras morir (4 segundos de espera para leer)
                             setTimeout(() => {
                                 exitGame();

@@ -131,6 +131,15 @@
                         "hint": "Usa llaves { } o la función set().",
                         "lesson": "Los conjuntos (sets) eliminan duplicados automáticamente y son perfectos para operaciones matemáticas de unión e intersección."
                     }
+                ],
+                "bosses": [
+                    {
+                        "id": 101,
+                        "question": "BOSS: Calcula la media de la columna 'energy' del DataFrame 'df'.",
+                        "answer": "df['energy'].mean()",
+                        "hint": "Combina la selección de columna con .mean()",
+                        "lesson": "¡ALERTA DE JEFE! El núcleo central requiere un cálculo directo. Selecciona la columna y aplica la media inmediatamente."
+                    }
                 ]
             },
             "intermediate": {
@@ -206,6 +215,15 @@
                         "answer": "[x*2 for x in nums]",
                         "hint": "[expresion for item in lista]",
                         "lesson": "Optimización de código requerida. Los bucles for son lentos y verbosos. Usa una comprensión de lista para procesar datos en una sola línea de alta velocidad."
+                    }
+                ],
+                "bosses": [
+                    {
+                        "id": 201,
+                        "question": "BOSS: Filtra 'df' donde 'energy' sea mayor a 50.",
+                        "answer": "df[df['energy'] > 50]",
+                        "hint": "df[condicion]",
+                        "lesson": "¡ALERTA DE JEFE! Sobrecarga inminente. Necesitamos aislar los sectores de alta energía. Aplica un filtro booleano al DataFrame."
                     }
                 ]
             },
