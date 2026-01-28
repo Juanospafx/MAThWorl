@@ -109,13 +109,105 @@
                         "answer": "df.describe()",
                         "hint": "Usa el método .describe()",
                         "lesson": "Dame un análisis completo. Usa `.describe()` para generar estadísticas descriptivas automáticas. Media, desviación, máximos... necesito saberlo todo para salvar la nave."
+                    },
+                    {
+                        "id": 16,
+                        "question": "Crea un diccionario llamado 'nave' con la clave 'estado' y valor 'online'.",
+                        "answer": "nave = {'estado': 'online'}",
+                        "hint": "Usa llaves { key: value }.",
+                        "lesson": "Los diccionarios almacenan datos en pares clave-valor, como una base de datos en miniatura. Son vitales para organizar configuraciones complejas."
+                    },
+                    {
+                        "id": 17,
+                        "question": "Accede al valor de la clave 'estado' del diccionario 'nave'.",
+                        "answer": "nave['estado']",
+                        "hint": "Usa corchetes con la clave ['clave'].",
+                        "lesson": "Para recuperar información de un diccionario, llamamos a la clave específica. Es mucho más rápido que buscar en una lista."
+                    },
+                    {
+                        "id": 18,
+                        "question": "Crea un conjunto (set) llamado 'uniques' con los valores 1, 2, 2, 3.",
+                        "answer": "uniques = {1, 2, 3}",
+                        "hint": "Usa llaves { } o la función set().",
+                        "lesson": "Los conjuntos (sets) eliminan duplicados automáticamente y son perfectos para operaciones matemáticas de unión e intersección."
                     }
                 ]
             },
             "intermediate": {
-                "title": "Sector 2: Manipulación de Datos",
-                "story": "Los datos están corruptos. Se requiere limpieza inmediata.",
-                "challenges": []
+                "title": "Sector 2: Manipulación y Asincronía",
+                "story": "Los flujos de datos están corruptos y llegan con latencia. Necesitamos limpiar los registros y establecer protocolos de comunicación asíncrona para no bloquear el sistema principal.",
+                "challenges": [
+                    {
+                        "id": 1,
+                        "question": "Elimina las filas con valores nulos del DataFrame 'df'.",
+                        "answer": "df.dropna()",
+                        "hint": "Usa el método .dropna()",
+                        "lesson": "Datos corruptos detectados. Las filas incompletas comprometen la integridad del análisis. Usa `dropna()` para purgar registros defectuosos."
+                    },
+                    {
+                        "id": 2,
+                        "question": "Rellena los valores nulos de 'df' con el valor 0.",
+                        "answer": "df.fillna(0)",
+                        "hint": "Usa el método .fillna(valor)",
+                        "lesson": "A veces no podemos borrar datos, debemos repararlos. Usa `fillna(0)` para asumir que la ausencia de señal equivale a energía cero."
+                    },
+                    {
+                        "id": 3,
+                        "question": "Renombra la columna 'energy' a 'power' en el DataFrame 'df'.",
+                        "answer": "df.rename(columns={'energy': 'power'})",
+                        "hint": "Usa .rename(columns={...})",
+                        "lesson": "Los protocolos antiguos usan terminología obsoleta. Actualiza el esquema de datos renombrando la columna clave para que coincida con el nuevo estándar."
+                    },
+                    {
+                        "id": 4,
+                        "question": "Agrupa 'df' por la columna 'sector' y calcula la media.",
+                        "answer": "df.groupby('sector').mean()",
+                        "hint": "Usa .groupby('columna').mean()",
+                        "lesson": "Necesitamos un reporte por zonas. Agrupa los datos por sector y calcula el promedio para identificar áreas críticas."
+                    },
+                    {
+                        "id": 5,
+                        "question": "Convierte la columna 'fecha' a objetos datetime.",
+                        "answer": "pd.to_datetime(df['fecha'])",
+                        "hint": "Usa pd.to_datetime()",
+                        "lesson": "El tiempo es relativo, pero en los logs debe ser exacto. Convierte las cadenas de texto en objetos de tiempo reales para poder filtrar por cronología."
+                    },
+                    {
+                        "id": 6,
+                        "question": "Importa la librería para programación asíncrona.",
+                        "answer": "import asyncio",
+                        "hint": "El módulo estándar es asyncio.",
+                        "lesson": "El procesador central se está bloqueando esperando respuestas. Necesitamos concurrencia. Importa `asyncio` para manejar tareas en paralelo."
+                    },
+                    {
+                        "id": 7,
+                        "question": "Define una función asíncrona llamada 'ping'.",
+                        "answer": "async def ping():",
+                        "hint": "Usa async def nombre():",
+                        "lesson": "Define una corutina especial que pueda pausarse y reanudarse. Usa `async def` para declarar funciones que operan fuera del flujo temporal principal."
+                    },
+                    {
+                        "id": 8,
+                        "question": "Dentro de una función async, espera 1 segundo sin bloquear.",
+                        "answer": "await asyncio.sleep(1)",
+                        "hint": "Usa await asyncio.sleep(...)",
+                        "lesson": "Debemos esperar la confirmación del satélite sin congelar la nave. Usa `await` para pausar solo esta tarea mientras el resto del sistema sigue operando."
+                    },
+                    {
+                        "id": 9,
+                        "question": "Ejecuta la función asíncrona 'ping()' desde el programa principal.",
+                        "answer": "asyncio.run(ping())",
+                        "hint": "Usa asyncio.run()",
+                        "lesson": "Para iniciar el ciclo de eventos asíncronos desde un contexto síncrono, necesitamos un detonador. `asyncio.run()` es la llave de encendido."
+                    },
+                    {
+                        "id": 10,
+                        "question": "Usa una list comprehension para duplicar los valores de la lista 'nums'.",
+                        "answer": "[x*2 for x in nums]",
+                        "hint": "[expresion for item in lista]",
+                        "lesson": "Optimización de código requerida. Los bucles for son lentos y verbosos. Usa una comprensión de lista para procesar datos en una sola línea de alta velocidad."
+                    }
+                ]
             },
             "master": {
                 "title": "Sector 3: Machine Learning",
